@@ -11,7 +11,6 @@ exports.getTopics = (req, res, next) => {
   }
 
   exports.getArticles = (req, res, next) => {
-
     Article.find()
     .then (articles => {
       res.send({articles})
@@ -62,7 +61,6 @@ exports.getTopics = (req, res, next) => {
     }
 
     exports.getUsers = (req, res, next) => {
-
       User.find()
       .then (users => {
         res.send({users})
@@ -94,4 +92,11 @@ exports.getTopics = (req, res, next) => {
         .catch(console.log)
       }
 
-     
+     exports.changeVotes = (req, res, next) => {
+     console.log('changing votes', req.query, 'QUERY', req.params, 'PARAMS')
+     if(req.query.vote === 'up') {
+     Article.findByIdAndUpdate(req.params.article_id, {$inc: {votes: 1}})
+     }
+     //else if(req.query.vote === 'down')
+     //}
+    // 
