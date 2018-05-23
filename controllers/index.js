@@ -61,10 +61,6 @@ exports.getTopics = (req, res, next) => {
       .catch(console.log)
     }
 
-    //req.body.title == article.title
-    //req.body.body === article.body, 
-    //req.params.topic == article.belongs_to 
-
     exports.getUsers = (req, res, next) => {
 
       User.find()
@@ -73,3 +69,29 @@ exports.getTopics = (req, res, next) => {
       })
      .catch(console.log)
       }
+
+      exports.getUserByUsername = (req, res, next) => {
+        console.log(req.params, 'getting user by username')
+      User.findOne({ username : req.params.username})
+      .then(user => {
+        res.send({user})
+      })
+      .catch(console.log)
+      }
+
+
+      exports.addCommentToArticle = (req, res, next) => {
+        console.log('adding comment to article', req.params, req.body.comment)
+        const newComment = new Comment ({
+          body: req.body.comment,
+          belongs_to: req.params.article_id,
+          created_at: new Date().getTime(),
+          })
+        return Comment.create(newComment)
+        .then(comment => {
+          res.send({comment})
+        })
+        .catch(console.log)
+      }
+
+     

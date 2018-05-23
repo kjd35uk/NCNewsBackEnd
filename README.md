@@ -59,11 +59,8 @@ GET /api/articles/:article_id ------ Get an individual article DONE
 GET /api/articles/:article_id/comments ------ Get all the comments for a individual article DONE
 POST /api/topics/:topic/articles ----- Add a new article to a topic. This route requires a JSON body with title and body key value pairs
 e.g: `{ "title": "this is my new article title", "body": "This is my new article content"}` DONE
-
-
-
-POST /api/articles/:article_id/comments ----- Add a new comment to an article. This route requires a JSON body with a comment key and value pair
-e.g: `{"comment": "This is my new comment"}`
+GET /api/users/:username ----- Returns a JSON object with the profile data for the specified user. DONE
+POST /api/articles/:article_id/comments ----- Add a new comment to an article. DONE
 
 PUT /api/articles/:article_id ------ Increment or Decrement the votes of an article by one. This route requires a vote query of 'up' or 'down'
 e.g: `/api/articles/:article_id?vote=up`
@@ -73,7 +70,6 @@ e.g: `/api/comments/:comment_id?vote=down`
 
 DELETE /api/comments/:comment_id ----- Deletes a comment
 
-GET /api/users/:username ----- Returns a JSON object with the profile data for the specified user.
 
 ### Step 3 - Hosting
 
