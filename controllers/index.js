@@ -46,3 +46,30 @@ exports.getTopics = (req, res, next) => {
       })
       .catch(console.log)
     }
+
+    exports.addArticlesToTopic = (req, res, next) => {
+      console.log('adding articles to comment')
+      const newArticle = new Article ({
+        title: req.body.title, 
+        body: req.body.body, 
+        belongs_to: req.params.topic, 
+        created_by: '5b0584f799b179c3ae3b4227'})
+      return Article.create(newArticle)
+      .then(article => {
+        res.send({article})
+      })
+      .catch(console.log)
+    }
+
+    //req.body.title == article.title
+    //req.body.body === article.body, 
+    //req.params.topic == article.belongs_to 
+
+    exports.getUsers = (req, res, next) => {
+
+      User.find()
+      .then (users => {
+        res.send({users})
+      })
+     .catch(console.log)
+      }
