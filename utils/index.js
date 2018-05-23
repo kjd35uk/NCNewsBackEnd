@@ -1,29 +1,68 @@
 //make function to get new user id from reference obj - use username as key and new id as value
-const createUserRef = (userData, userDocs) => {
-  return userData.reduce((acc, userDatum, index) => {
-    acc[userDatum.username] = userDocs[index]._id;
-    return acc;
-  }, {});
-};
-
-// const createTopicRef = (topicData, topicDocs) => {
-//   return topicData.reduce((acc, topicDatum, index) => {
-//     acc[topicDatum.slug] = topicDocs[index]._id;
+// const createUserRef = (userData, userDocs) => {
+//   return userData.reduce((acc, userDatum, index) => {
+//     acc[userDatum.username] = userDocs[index]._id;
 //     return acc;
 //   }, {});
 // };
 
-exports.formatArticleData = (articleData, userDocs, userData) => {
-  const userRef = createUserRef(userData, userDocs);
-  //const topicRef = createTopicRef(topicData, topicDocs)
+// const createArticleRef = (articleData, articleDocs) => {
+//   return articleData.reduce((acc, articleDatum, index) => {
+//     acc[articleDatum.title] = articleDocs[index]._id;
+//     return acc;
+//   }, {});
+// };
 
-  return articleData.map(articleDatum => {
+// exports.formatArticleData = (articleData, userDocs, userData) => {
+//   const userRef = createUserRef(userData, userDocs);
+
+//   return articleData.map(articleDatum => {
+//     return {
+//       title: articleDatum.title,
+//       body: articleDatum.body,
+//       belongs_to: articleDatum.topic,
+//       votes: 0,
+//       created_by: userRef[articleDatum.created_by]
+//     };
+//   });
+// };
+
+// exports.formatCommentData = (commentData, userDocs, userData, articleDocs, articleData) => {
+//   const userRef = createUserRef(userData, userDocs);
+//   const articleRef = createTopicRef(articleData, articleDocs)
+
+//   return commentData.map(CommentDatum => {
+//     return {
+//       body: CommentDatum.body,
+//       belongs_to: articleRef[CommentDatum.belongs_to],
+//       created_at: CommentDatum.created_at,
+//       votes: CommentDatum.votes,
+//       created_by: userRef[CommentDatum.created_by]
+//     };
+//   });
+// };
+
+//THIS ALSO WORKS AND IS WAY SHORTER ===
+exports.formatArticleData = (articlesData, userDocs) => {
+  return articlesData.map(article => {
     return {
-      title: articleDatum.title,
-      body: articleDatum.body,
-      belongs_to: articleDatum.topic,
-      votes: 0,
-      created_by: userRef[articleDatum.created_by]
-    };
-  });
-};
+      ...article,
+      belongs_to: article.topic,
+      created_by: userDocs.find(user => user.username === article.created_by)
+        ._id
+    }
+  })
+ }
+ 
+ exports.formatCommentData = (commentData, articleDocs, userDocs) => {
+  return commentData.map(comment => {
+    return {
+      ...comment,
+      belongs_to: articleDocs.find(
+        article => article.title === comment.belongs_to
+      )._id,
+      created_by: userDocs.find(user => user.username === comment.created_by)
+        ._id
+    }
+  })
+ }
