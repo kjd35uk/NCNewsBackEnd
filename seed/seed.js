@@ -1,10 +1,10 @@
-process.env.NODE_ENV = "dev";
+
 const mongoose = require("mongoose");
 mongoose.Promise = Promise;
 const { DB_URL } = require("../config");
 const { Article, Comment, Topic, User } = require("../models");
 const { formatArticleData, formatCommentData } = require("../utils");
-const { topicData, userData, articleData, commentData } = require("./devData");
+
 
 const seedDB = (topicData, userData, articleData, commentData) => {
   return mongoose.connection
