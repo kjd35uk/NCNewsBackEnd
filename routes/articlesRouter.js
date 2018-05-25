@@ -13,4 +13,8 @@ router.get("/:article_id/comments", getCommentsByArticleId); //Get all the comme
 router.post("/:article_id/comments", addCommentToArticle); // Add a new comment to an article.
 router.put("/:article_id", changeVotesArticle); //Increment or Decrement the votes of an article by one.
 
+router.use('/*', (req, res, next) => {
+  next({status: 404, msg: 'Page not found'})
+})
+
 module.exports = router;

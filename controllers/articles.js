@@ -1,67 +1,68 @@
 const { Article, Comment, Topic, User } = require("../models");
 
+// 
+
 exports.getArticles = (req, res, next) => {
-  Article.find().lean()
-  .then(articles => {
-    return Promise.all([articles, ...articles.map(artObj => Comment.count({ belongs_to: artObj._id }))])
-  })
-  .then(([articles, ...commentCounts]) => {
-    let result = articles.map((artObj, index) => {
-     artObj.comments = commentCounts[index]
-     return artObj;
-  })
-  res.send({articles: result})
-  })
-    }
+  Article.find()
+    .then(articles => {
+      res.send({ articles });
+    })
+    .catch(next);
+};
 
 
 exports.getArticleById = (req, res, next) => {
   console.log(req.params, "getting article by id");
   Article.findOne({ _id: req.params.article_id })
     .then(article => {
-      res.send({ article });
+      article === null ?  next({status: 404, msg: `article ${req.params.article_id} not found`}) : res.send({ article })
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
   console.log(req.params, "getting comments by article id");
   Comment.find({ belongs_to: req.params.article_id })
     .then(comments => {
-      res.send({ comments });
+      console.log(comments, 'LENGTH')
+      return comments.length === 0 ? next({status: 404, msg: `no comments found for article ${req.params.article_id}`}) : res.send({ comments });
     })
-    .catch(console.log);
+    .catch((err) => {
+      if(err.name === 'CastError') return next({status: 400})
+      else next(err)
+    })
 };
 
 exports.addCommentToArticle = (req, res, next) => {
-  console.log("adding comment to article", req.params, req.body.comment);
-  const newComment = new Comment({
-    body: req.body.comment,
-    belongs_to: req.params.article_id,
-    created_at: new Date().getTime()
-  });
-  return Comment.create(newComment)
+  console.log("adding comment to article");
+  return User.findOne()
+  .then((user) => {
+    const newComment = new Comment({
+      body: req.body.comment,
+      belongs_to: req.params.article_id,
+      created_by: user._id
+    });
+    return Comment.create(newComment)
+  })
     .then(comment => {
-      res.status(201).send({ comment });
+      console.log(comment)
+     res.status(201).send({comment})
     })
-    .catch(console.log);
-};
+    .catch((err) => {
+       next({status: 400, msg: `article ${req.params.article_id} cannot be found. Your comment has not been added`})
+      })
+    }
 
-exports.changeVotesArticle = (req, res, next) => {
-  console.log("changing votes", req.params.article_id);
-  if (req.query.vote === "up") {
-    Article.findByIdAndUpdate(req.params.article_id, { $inc: { votes: 1 } })
-      .then(article => {
-        res.status(202).send({ msg: "Thanks for your vote!" });
-      })
-      .catch(console.log);
-  } else if (req.query.vote === "down") {
-    Article.findByIdAndUpdate(req.params.article_id, {
-      $inc: { votes: -1 }
-    })
-      .then(article => {
-        res.status(202).send({ msg: "Thanks for your vote!" });
-      })
-      .catch(console.log);
-  }
-};
+
+  exports.changeVotesArticle = (req, res, next) => {
+    let count;
+    req.query.vote === "up" ? count = 1 : req.query.vote === "down" ? count = -1 : next({status: 400, msg: 'Please enter up or down'})
+      Article.findByIdAndUpdate(req.params.article_id, { $inc: { votes: count } }, {new: true})
+        .then(article => {
+          !article ? next({status: 404, msg: `article ${req.params.article_id} cannot be found. Your vote has not been added` }) : res.status(202).send({ article });
+        })
+        .catch((err) => {
+          if(err.name === 'CastError') return next({status: 400, msg:`article ${req.params.article_id} cannot be found. Your vote has not been added`})
+          else next(err)
+        })
+      }

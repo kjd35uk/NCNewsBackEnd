@@ -10,5 +10,8 @@ router.use('/articles', articlesRouter)
 router.use('/users', usersRouter)
 router.use('/topics', topicsRouter)
 
+router.use('/*', (req, res, next) => {
+  next({status: 404, msg: 'Page not found'})
+})
 
 module.exports = router;

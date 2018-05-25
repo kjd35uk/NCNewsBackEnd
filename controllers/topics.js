@@ -3,22 +3,23 @@ const { Topic, Article } = require("../models");
 exports.getTopics = (req, res, next) => {
   Topic.find()
     .then(topics => {
-      res.send({ topics });
+      if(topics !== null) res.send({ topics });
     })
-    .catch(console.log);
+    .catch(next);
 };
 
 exports.getArticlesByTopic = (req, res, next) => {
-  console.log("getting articles", req.params);
+  if(!isNaN(+req.params.topic)) next({status: 400, msg: `bad request: ${req.params.topic} is not a string`})
   Article.find({ belongs_to: req.params.topic })
     .then(articles => {
-      res.send({ articles });
+      articles.length === 0 ? next({status: 404, msg: `${req.params.topic} not found`}) : res.send({ articles });
     })
-    .catch(console.log);
+   .catch(next)
 };
 
 exports.addArticlesToTopic = (req, res, next) => {
-  console.log("adding articles to comment");
+  console.log("adding articles");
+  if(!isNaN(+req.params.topic)) next({status: 400, msg: `bad request: ${req.params.topic} is not a string`})
   const newArticle = new Article({
     title: req.body.title,
     body: req.body.body,
@@ -29,5 +30,5 @@ exports.addArticlesToTopic = (req, res, next) => {
     .then(article => {
       res.status(201).send({ article });
     })
-    .catch(console.log);
+    .catch(next);
 };

@@ -5,30 +5,45 @@ exports.getComments = (req, res, next) => {
     .then(comments => {
       res.send({ comments });
     })
-    .catch(console.log);
+    .catch(next);
 };
+exports.getCommentById = (req, res, next) => {
+  console.log(req.params, "getting comment by id");
+  Comment.findOne({ _id: req.params.comment_id })
+    .then(comment => {
+     comment === null ? next({status: 404, msg: `${req.params.comment_id} not found`}) : res.send({ comment });
+    })
+    .catch((err) => {
+      next({status: 400, msg: `bad request: ${req.params.comment_id} is not a valid comment id`})
+    });
+  };
 
 exports.changeVotesComment = (req, res, next) => {
-  if (req.query.vote === "up") {
-    Comment.findByIdAndUpdate(req.params.comment_id, { $inc: { votes: 1 } })
+  let count;
+  req.query.vote === "up" ? count = 1 : req.query.vote === "down" ? count = -1 : next({status: 400, msg: 'Please enter up or down'})
+    Comment.findByIdAndUpdate(req.params.comment_id, { $inc: { votes: count } }, {new: true})
       .then(comment => {
-        res.status(202).send({ comment });
+        comment === null ? next({status: 404, msg: `${req.params.comment_id} not found`}) : res.status(202).send({ comment });
       })
-      .catch(console.log);
-  } else if (req.query.vote === "down") {
-    Comment.findByIdAndUpdate(req.params.comment_id, {
-      $inc: { votes: -1 }
-    })
-      .then(comment => {
-        res.status(202).send({ comment });
-      })
-      .catch(console.log);
+      .catch(next);
   }
-};
+
 
 exports.deleteComment = (req, res, next) => {
-  console.log("deleting comment");
-  Comment.remove({ _id: req.params.comment_id }).then(() => {
-    res.status(400).send("Your selected comment has been deleted");
-  });
+  console.log("deleting comment", req.params);
+  Comment.findOne({ _id: req.params.comment_id })
+.then(comment => {
+  console.log(comment, 'COMMENT')
+  if (comment === null) {
+let error = new Error('Comment not found')
+error.status = 404
+error.msg = 'Comment not found'
+throw error
+  }  
+  else return Comment.remove({ _id: req.params.comment_id })
+})
+.then(() => {
+    res.status(204).send();
+  })
+  .catch(next)
 };

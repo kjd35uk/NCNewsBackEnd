@@ -3,16 +3,19 @@ const { User } = require("../models");
 exports.getUsers = (req, res, next) => {
   User.find()
     .then(users => {
-      res.send({ users });
+      if(users !== null) res.send({ users });
     })
-    .catch(console.log);
+    .catch(next);
 };
+
 
 exports.getUserByUsername = (req, res, next) => {
   console.log(req.params, "getting user by username");
-  User.findOne({ username: req.params.username })
+  User.findOne({ _id: req.params.username })
     .then(user => {
-      res.send({ user });
+      console.log(user)
+     res.send({ user });
     })
-    .catch(console.log);
-};
+    .catch(err => 
+      next({status: 404, msg: `${req.params.username} not found`}))
+  };
