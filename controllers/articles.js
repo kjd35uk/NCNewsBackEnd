@@ -12,7 +12,7 @@ exports.getArticles = (req, res, next) => {
 
 
 exports.getArticleById = (req, res, next) => {
-  console.log(req.params, "getting article by id");
+  console.log("getting article by id");
   Article.findOne({ _id: req.params.article_id })
     .then(article => {
       article === null ?  next({status: 404, msg: `article ${req.params.article_id} not found`}) : res.send({ article })
@@ -24,7 +24,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
   console.log(req.params, "getting comments by article id");
   Comment.find({ belongs_to: req.params.article_id })
     .then(comments => {
-      console.log(comments, 'LENGTH')
       return comments.length === 0 ? next({status: 404, msg: `no comments found for article ${req.params.article_id}`}) : res.send({ comments });
     })
     .catch((err) => {
@@ -45,7 +44,6 @@ exports.addCommentToArticle = (req, res, next) => {
     return Comment.create(newComment)
   })
     .then(comment => {
-      console.log(comment)
      res.status(201).send({comment})
     })
     .catch((err) => {

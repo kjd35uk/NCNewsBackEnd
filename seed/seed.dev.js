@@ -6,18 +6,17 @@ const {topicData, userData, commentData, articleData} = require('../seed/devData
 
 mongoose.connect(DB_URL)
 .then(() => {
-  console.log(DB_URL, 'URL')
   return seedDB(topicData, userData, articleData, commentData)
 })
 .then (() => {
-  console.log('DB successfully seeded')
+  console.log(`DB ${DB_URL} successfully seeded`)
   return mongoose.disconnect()
 })
 .then(() => {
   console.log('DB disconnected')
 })
 .catch((err) => {
-console.log(err)
+next(err)
 return mongoose.disconnect()
 });
 

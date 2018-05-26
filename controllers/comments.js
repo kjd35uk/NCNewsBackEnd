@@ -8,7 +8,7 @@ exports.getComments = (req, res, next) => {
     .catch(next);
 };
 exports.getCommentById = (req, res, next) => {
-  console.log(req.params, "getting comment by id");
+  console.log("getting comment by id");
   Comment.findOne({ _id: req.params.comment_id })
     .then(comment => {
      comment === null ? next({status: 404, msg: `${req.params.comment_id} not found`}) : res.send({ comment });
@@ -33,7 +33,6 @@ exports.deleteComment = (req, res, next) => {
   console.log("deleting comment", req.params);
   Comment.findOne({ _id: req.params.comment_id })
 .then(comment => {
-  console.log(comment, 'COMMENT')
   if (comment === null) {
 let error = new Error('Comment not found')
 error.status = 404

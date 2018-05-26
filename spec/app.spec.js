@@ -53,7 +53,7 @@ describe("/articles/:article_id", () => {
         expect(res.body.article).to.have.keys('title', 'body', 'belongs_to', 'votes', 'created_by', '__v', '_id')
       });
   });
-  it('GET returns a 404 and an error message of area not found when passed an article that does not exist', () => {
+  it('GET returns a 404 and a message when passed an article that does not exist', () => {
     return request
       .get(`/api/articles/${users[0]._id}`)
       .expect(404)
