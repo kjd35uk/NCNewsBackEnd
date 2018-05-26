@@ -3,7 +3,7 @@ const commentsRouter = require('./commentsRouter')
 const articlesRouter = require('./articlesRouter')
 const usersRouter = require('./usersRouter')
 const topicsRouter = require('./topicsRouter')
-const routes = require('../utils/apiroutes.json')
+// const routes = require('../utils/apiroutes.json')
 
 
 router.get("/", (req, res, next) => {

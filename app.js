@@ -13,7 +13,7 @@ app.use("/api", apiRouter);
 
 
 app.get('/', (req, res, next) => {
-  res.r("index.html")
+  res.render("index.html")
 })
 app.use((err, req, res, next) => {
   if(err.status === 404) res.status(404).send({msg: err.msg});
