@@ -1,24 +1,45 @@
 const { Article, Comment, Topic, User } = require("../models");
 
-// 
+
+const addCommentCount = (article) => {
+  console.log(article, "ArTICLE")
+  return Promise.all([Comment.count({belongs_to: article._id}), article])
+  .then(([commentCount, article]) => {
+      article.comments = commentCount
+      return article
+ })
+ .catch((err) => {
+   console.log(err.name, 'COMMENT error')
+ })
+}
 
 exports.getArticles = (req, res, next) => {
-  Article.find()
-    .then(articles => {
-      res.send({ articles });
-    })
-    .catch(next);
-};
-
+ Article.find().lean()
+ .then(articles => {
+   return Promise.all([articles, ...articles.map(addCommentCount)]) 
+ })
+ .then(articles => {
+   res.send({articles})
+ })
+ .catch(next)
+   }
 
 exports.getArticleById = (req, res, next) => {
-  console.log("getting article by id");
-  Article.findOne({ _id: req.params.article_id })
+  console.log("getting article by id", (/\d[a-z]/).test(req.params.article_id.toString()));
+  if(req.params.article_id.length !== 24)/*|| !(/\d[a-z]/).test(req.params.article_id.toString()))*/ next({status: 400, msg: `bad request: ${req.params.article_id} is not a valid id`})
+ Article.findOne({ _id: req.params.article_id }).lean()
     .then(article => {
-      article === null ?  next({status: 404, msg: `article ${req.params.article_id} not found`}) : res.send({ article })
+     return addCommentCount(article)
     })
-    .catch(next);
-};
+    .then(article => {
+      res.send({article})
+    })
+    .catch((err) => {
+      console.log(err.name)
+      if(err.name === 'CastError' || err.name === 'TypeError') return next({status: 404, msg: `article ${req.params.article_id} could not be found`})
+      next(err)
+    })
+  }
 
 exports.getCommentsByArticleId = (req, res, next) => {
   console.log(req.params, "getting comments by article id");
@@ -27,7 +48,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
       return comments.length === 0 ? next({status: 404, msg: `no comments found for article ${req.params.article_id}`}) : res.send({ comments });
     })
     .catch((err) => {
-      if(err.name === 'CastError') return next({status: 400})
+      if(err.name === 'CastError') return next({status: 400, msg: `article ${req.params.article_id} could not be found`})
       else next(err)
     })
 };

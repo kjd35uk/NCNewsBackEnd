@@ -43,6 +43,7 @@
 // };
 
 //THIS ALSO WORKS AND IS WAY SHORTER ===
+const {Comment} = require('../')
 exports.formatArticleData = (articlesData, userDocs) => {
   return articlesData.map(article => {
     return {
@@ -66,3 +67,10 @@ exports.formatArticleData = (articlesData, userDocs) => {
     }
   })
  }
+
+ exports.addCommentCount = (article) => {
+  return Promise.all([Comment.count({belongs_to: article._id}), article])
+  .then(([commentCount, article]) => {
+    article.comments = commentCount
+ })
+}
