@@ -43,7 +43,7 @@
 // };
 
 //THIS ALSO WORKS AND IS WAY SHORTER ===
-const {Comment} = require('../')
+const {Comment} = require('../models')
 exports.formatArticleData = (articlesData, userDocs) => {
   return articlesData.map(article => {
     return {
@@ -69,8 +69,26 @@ exports.formatArticleData = (articlesData, userDocs) => {
  }
 
  exports.addCommentCount = (article) => {
-  return Promise.all([Comment.count({belongs_to: article._id}), article])
-  .then(([commentCount, article]) => {
-    article.comments = commentCount
+  //console.log(article, "ArTICLE")
+  return Comment.count({belongs_to: article._id})
+  .then((commentCount) => {
+      article.comments = commentCount
+      return article
+ })
+ .catch((err) => {
+   console.log(err.name, 'COMMENT error')
  })
 }
+
+// exports.addCommentCount = (article) => {
+//   //console.log(article, "ArTICLE")
+//   return Promise.all([Comment.count({belongs_to: article._id}), article])
+//   .then(([commentCount, article]) => {
+//       article.comments = commentCount
+      
+//       return article
+//  })
+//  .catch((err) => {
+//    console.log(err.name, 'COMMENT error')
+//  })
+// }
