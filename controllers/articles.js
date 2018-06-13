@@ -3,7 +3,7 @@ const {addCommentCount} = require('../utils')
 
 
 exports.getArticles = (req, res, next) => {
- Article.find().lean()
+ Article.find().populate('created_by').lean()
  .then(articles => {
    return Promise.all([...articles.map(addCommentCount)])
  })
@@ -17,7 +17,7 @@ exports.getArticleById = (req, res, next) => {
   let id = req.params.article_id
   //console.log("getting article by id");
 if(id.length !== 24 || !(/(^[0-9])(?=.*[0-9]).+(?=.*[a-z])/g).test (id.toString()) || id.match(/[^0-9a-z]/i)) next({status: 400, msg: `bad request: ${id} is not a valid article id`})
- Article.findOne({ _id: id }).lean()
+ Article.findOne({ _id: id }).populate('created_by').lean()
     .then(article => {
      return addCommentCount(article)
     })

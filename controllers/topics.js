@@ -11,7 +11,7 @@ exports.getTopics = (req, res, next) => {
 
 exports.getArticlesByTopic = (req, res, next) => {
   if(!isNaN(+req.params.topic)) next({status: 400, msg: `bad request: ${req.params.topic} is not a string`})
-  Article.find({ belongs_to: req.params.topic }).lean()
+  Article.find({ belongs_to: req.params.topic }).populate('created_by').lean()
     .then(articles => {
      return Promise.all([...articles.map(addCommentCount)]) 
     })
