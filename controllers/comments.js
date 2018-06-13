@@ -1,7 +1,7 @@
 const { Comment } = require("../models");
 
 exports.getComments = (req, res, next) => {
-  Comment.find()
+  Comment.find().populate('created_by')
     .then(comments => {
       res.send({ comments });
     })
@@ -11,7 +11,7 @@ exports.getCommentById = (req, res, next) => {
   //console.log("getting comment by id");
   let id = req.params.comment_id
 if(id.length !== 24 || !(/(^[0-9])(?=.*[0-9]).+(?=.*[a-z])/g).test (id.toString()) || id.match(/[^0-9a-z]/i)) next({status: 400, msg: `bad request: ${id} is not a valid comment id`})
-  Comment.findOne({ _id: id })
+  Comment.findOne({ _id: id }).populate('created_by')
     .then(comment => {
      comment === null ? next({status: 404, msg: `comment ${id} not found`}) : res.send({ comment });
     })

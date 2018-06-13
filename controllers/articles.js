@@ -34,7 +34,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
   let id = req.params.article_id
   if(id.length !== 24 || !(/(^[0-9])(?=.*[0-9]).+(?=.*[a-z])/g).test (id.toString()) || id.match(/[^0-9a-z]/i)) next({status: 400, msg: `bad request: ${id} is not a valid article id`})
   //console.log(req.params, "getting comments by article id");
-  Comment.find({ belongs_to: id })
+  Comment.find({ belongs_to: id }).populate('created_by')
     .then(comments => {
       return comments.length === 0 ? next({status: 404, msg: `article ${id} could not be found`}) : res.send({ comments });
     })

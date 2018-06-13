@@ -16,7 +16,7 @@ mongoose.connect(DB_URL)
   console.log('DB disconnected')
 })
 .catch((err) => {
-next(err)
+// next(err)
 return mongoose.disconnect()
 });
 
