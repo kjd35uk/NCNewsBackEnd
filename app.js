@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
 const { DB_URL } = process.env.NODE_ENV === 'production' ? process.env : require("./config");
 const bodyParser = require("body-parser");
 const apiRouter = require("./routes/apiRouter");
+const cors = require('cors');
 
 mongoose.connect(DB_URL);
 
+app.use(cors())
 app.use(bodyParser.json());
 app.use(express.static('public'))
 app.use("/api", apiRouter);
