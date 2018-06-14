@@ -7,7 +7,7 @@
     "test": "NODE_ENV=test mocha spec/",
     "start": "node listen.js",
     "seed:dev": "node ./seed/seed.dev.js",
-    "dev": "npm run seed:dev && nodemon listen.js",
+    "dev": "nodemon listen.js",
     "seed:prod": "NODE_ENV=production node ./seed/seed.dev.js"
   },
   "author": "",

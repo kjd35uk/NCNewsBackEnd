@@ -51,7 +51,7 @@ exports.addCommentToArticle = (req, res, next) => {
   Article.findOne({_id: id}).populate('created_by')
   .then(article => {
     if(article === null) next({status: 404, msg: `article ${id} cannot be found. Your comment has not been added`}) 
-    else return User.findOne()
+    else return User.findOne().lean()
   })
   .then((user) => {
     const newComment = new Comment({
@@ -59,10 +59,10 @@ exports.addCommentToArticle = (req, res, next) => {
       belongs_to: id,
       created_by: user._id
     });
-    return Comment.create(newComment).populate('created_by')
+    return Promise.all([Comment.create(newComment), user])
   })
-    .then(comment => {
-     res.status(201).send({comment})
+    .then(([comment, user]) => {
+     res.status(201).send({comment: {...JSON.parse(JSON.stringify(comment)), created_by: user}})
     })
     .catch((err) => {
       if(err.name === 'CastError') return next({status: 404, msg: `article ${id} cannot be found. Your comment has not been added`})
