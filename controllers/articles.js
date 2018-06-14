@@ -62,7 +62,7 @@ exports.addCommentToArticle = (req, res, next) => {
     return Promise.all([Comment.create(newComment), user])
   })
     .then(([comment, user]) => {
-     res.status(201).send({comment: {...JSON.parse(JSON.stringify(comment)), created_by: user}})
+     res.status(201).send({comment: {...comment.toObject(), created_by: user}})
     })
     .catch((err) => {
       if(err.name === 'CastError') return next({status: 404, msg: `article ${id} cannot be found. Your comment has not been added`})
