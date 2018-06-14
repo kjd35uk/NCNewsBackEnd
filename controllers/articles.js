@@ -59,7 +59,7 @@ exports.addCommentToArticle = (req, res, next) => {
       belongs_to: id,
       created_by: user._id
     });
-    return Comment.create(newComment)
+    return Comment.create(newComment).populate('created_by')
   })
     .then(comment => {
      res.status(201).send({comment})
