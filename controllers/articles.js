@@ -48,7 +48,7 @@ exports.addCommentToArticle = (req, res, next) => {
   //console.log("adding comment to article");
   let id = req.params.article_id
   if(id.length !== 24 || !(/(^[0-9])(?=.*[0-9]).+(?=.*[a-z])/g).test (id.toString()) || id.match(/[^0-9a-z]/i)) next({status: 400, msg: `bad request: ${id} is not a valid article id`})
-  Article.findOne({_id: id})
+  Article.findOne({_id: id}).populate('created_by')
   .then(article => {
     if(article === null) next({status: 404, msg: `article ${id} cannot be found. Your comment has not been added`}) 
     else return User.findOne()
@@ -75,7 +75,7 @@ exports.addCommentToArticle = (req, res, next) => {
     let id = req.params.article_id
     if(id.length !== 24 || !(/(^[0-9])(?=.*[0-9]).+(?=.*[a-z])/g).test (id.toString()) || id.match(/[^0-9a-z]/i)) next({status: 400, msg: `bad request: ${id} is not a valid article id`})
     req.query.vote === "up" ? count = 1 : req.query.vote === "down" ? count = -1 : next({status: 400, msg: 'Please enter up or down'})
-      Article.findByIdAndUpdate(id, { $inc: { votes: count } }, {new: true}).lean()
+      Article.findByIdAndUpdate(id, { $inc: { votes: count } }, {new: true}).populate('created_by').lean()
       .then(article => {
         if(article === null) {
           next({status: 404, msg:`article ${id} cannot be found. Your vote has not been added`})

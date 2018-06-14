@@ -26,7 +26,7 @@ exports.changeVotesComment = (req, res, next) => {
   let id = req.params.comment_id
 if(id.length !== 24 || !(/(^[0-9])(?=.*[0-9]).+(?=.*[a-z])/g).test (id.toString()) || id.match(/[^0-9a-z]/i)) next({status: 400, msg: `bad request: ${id} is not a valid comment id`})
   req.query.vote === "up" ? count = 1 : req.query.vote === "down" ? count = -1 : next({status: 400, msg: 'Please enter up or down'})
-    Comment.findByIdAndUpdate(id, { $inc: { votes: count } }, {new: true})
+    Comment.findByIdAndUpdate(id, { $inc: { votes: count } }, {new: true}).populate('created_by')
       .then(comment => {
         comment === null ? next({status: 404, msg: `${id} not found`}) : res.status(202).send({ comment });
       })
