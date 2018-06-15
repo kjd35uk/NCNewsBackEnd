@@ -36,7 +36,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
   //console.log(req.params, "getting comments by article id");
   Comment.find({ belongs_to: id }).populate('created_by')
     .then(comments => {
-      return comments.length === 0 ? next({status: 404, msg: `article ${id} could not be found`}) : res.send({ comments });
+       res.send({ comments });
     })
     .catch((err) => {
       if(err.name === 'CastError') return next({status: 404, msg: `article ${id} could not be found`})
