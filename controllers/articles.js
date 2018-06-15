@@ -57,7 +57,8 @@ exports.addCommentToArticle = (req, res, next) => {
     const newComment = new Comment({
       body: req.body.comment,
       belongs_to: id,
-      created_by: user._id
+      created_by: user._id,
+      created_at: new Date().getTime()
     });
     return Promise.all([Comment.create(newComment), user])
   })
