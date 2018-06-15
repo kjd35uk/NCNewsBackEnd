@@ -62,7 +62,8 @@ exports.addArticlesToTopic = (req, res, next) => {
       body: req.body.body,
       belongs_to: req.params.topic,
       created_by: user._id,
-      comments: 0
+      comments: 0,
+      created_at: new Date().getTime()
     });
     return Article.create(newArticle)
   }) 

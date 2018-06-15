@@ -7,7 +7,9 @@ const ArticleSchema = new Schema({
   belongs_to: {type: String, required: true},
   votes: {type: Number, required: true, default: 0},
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
-  comments: {type: Number}
+  comments: {type: Number},
+  created_at: {type: Number, default: new Date().getTime()},
+
 });
 
 module.exports = mongoose.model('articles', ArticleSchema);
