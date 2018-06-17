@@ -11,7 +11,7 @@ exports.getUsers = (req, res, next) => {
 
 exports.getUserByUsername = (req, res, next) => {
   //console.log("getting user by username");
-  User.findOne({ _id: req.params.username })
+  User.findOne({ username: req.params.username })
     .then(user => {
      res.send({ user });
     })
